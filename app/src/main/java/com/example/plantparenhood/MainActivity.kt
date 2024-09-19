@@ -1,14 +1,14 @@
-package com.example.plantparenhood
+package com.example.plantparenthood
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 //import com.example.plantidentifier.databinding.ActivityMainBinding
-import com.example.plantparenhood.BadgesFragment
-import com.example.plantparenhood.CameraFragment
-import com.example.plantparenhood.GardenFragment
-import com.example.plantparenhood.R
-import com.example.plantparenhood.databinding.ActivityMainBinding
+import com.example.plantparenthood.BadgesFragment
+import com.example.plantparenthood.CameraFragment
+import com.example.plantparenthood.GardenFragment
+import com.example.plantparenthood.R
+import com.example.plantparenthood.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

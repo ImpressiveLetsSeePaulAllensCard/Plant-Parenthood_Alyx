@@ -1,4 +1,4 @@
-package com.example.plantparenhood
+package com.example.plantparenthood
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

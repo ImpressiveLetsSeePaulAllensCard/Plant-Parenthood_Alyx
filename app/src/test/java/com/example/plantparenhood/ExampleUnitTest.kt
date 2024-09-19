@@ -1,4 +1,4 @@
-package com.example.plantparenhood
+package com.example.plantparenthood
 
 import org.junit.Test
 

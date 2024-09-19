@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    namespace = "com.example.plantparenhood"
+    namespace = "com.example.plantparenthood"
     compileSdk = 34
 
     buildFeatures {
         viewBinding = true
     }
     defaultConfig {
-        applicationId = "com.example.plantparenhood"
+        applicationId = "com.example.plantparenthood"
         minSdk = 31
         targetSdk = 34
         versionCode = 1

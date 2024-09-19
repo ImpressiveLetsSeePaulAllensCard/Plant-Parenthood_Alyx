@@ -2,8 +2,8 @@
 <paths>
     <external-path
         name="photos"
-        path="Android/data/com.example.plantparenhood/files/Pictures" />
+        path="Android/data/com.example.plantparenthood/files/Pictures" />
     <external-path
         name="videos"
-        path="Android/data/com.example.plantparenhood/files/Movies" />
+        path="Android/data/com.example.plantparenthood/files/Movies" />
 </paths>
