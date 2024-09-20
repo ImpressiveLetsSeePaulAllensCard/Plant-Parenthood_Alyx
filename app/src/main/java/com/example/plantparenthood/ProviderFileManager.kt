@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import androidx.core.content.FileProvider
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.util.concurrent.Executor
@@ -16,43 +17,60 @@ class ProviderFileManager(
     private val mediaContentHelper: MediaContentHelper
 ) {
     fun generatePhotoUri(time: Long): FileInfo {
-        val name = "img_$time.jpg"//we are giving the file name here
+        val name = "img_$time.jpg"
         val file = File(
-            context.getExternalFilesDir(fileHelper.getPicturesFolder()),//we are specifying the folder position
+            context.getExternalFilesDir(fileHelper.getPicturesFolder()),
             name
         )
-        return FileInfo(//returning the information once saved
-            fileHelper.getUriFromFile(file),
+
+        val uri = FileProvider.getUriForFile(
+            context,
+            "com.example.plantparenthood.fileprovider",
+            file
+        )
+
+        return FileInfo(
+            uri,
             file,
             name,
             fileHelper.getPicturesFolder(),
             "image/jpeg"
         )
     }
+
     fun generateVideoUri(time: Long): FileInfo {
         val name = "video_$time.mp4"
         val file = File(
             context.getExternalFilesDir(fileHelper.getVideosFolder()),
             name
         )
+
+        val uri = FileProvider.getUriForFile(
+            context,
+            "com.example.plantparenthood.fileprovider",
+            file
+        )
+
         return FileInfo(
-            fileHelper.getUriFromFile(file),
+            uri,
             file,
             name,
             fileHelper.getVideosFolder(),
             "video/mp4"
         )
     }
+
     fun insertImageToStore(fileInfo: FileInfo?) {
         fileInfo?.let {
             insertToStore(
                 fileInfo,
-                mediaContentHelper.getImageContentUri(),//these functions are being called so that we can insert the photo or video
+                mediaContentHelper.getImageContentUri(),
                 mediaContentHelper.generateImageContentValues(it)
             )
         }
     }
-    fun insertVideoToStore(fileInfo: FileInfo?) {//completing the process by inserting it into the store
+
+    fun insertVideoToStore(fileInfo: FileInfo?) {
         fileInfo?.let {
             insertToStore(
                 fileInfo,
@@ -61,6 +79,7 @@ class ProviderFileManager(
             )
         }
     }
+
     private fun insertToStore(fileInfo: FileInfo, contentUri: Uri, contentValues: ContentValues) {
         executor.execute {
             val insertedUri = contentResolver.insert(contentUri, contentValues)
