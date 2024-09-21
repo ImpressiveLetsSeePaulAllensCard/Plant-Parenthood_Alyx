@@ -6,17 +6,17 @@
 
     <fragment
         android:id="@+id/navigation_camera"
-        android:name="com.example.plantparenhood.CameraFragment"
+        android:name="com.example.plantparenthood.CameraFragment"
         android:label="Camera" />
 
     <fragment
         android:id="@+id/navigation_garden"
-        android:name="com.example.plantparenhood.GardenFragment"
+        android:name="com.example.plantparenthood.GardenFragment"
         android:label="Garden" />
 
     <fragment
         android:id="@+id/navigation_badges"
-        android:name="com.example.plantparenhood.BadgesFragment"
+        android:name="com.example.plantparenthood.BadgesFragment"
         android:label="Badges" />
 
 </navigation>
