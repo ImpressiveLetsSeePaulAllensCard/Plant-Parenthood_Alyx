@@ -89,10 +89,19 @@ class CameraFragment : Fragment() {
             uri?.let {
                 // Handle the selected image URI (e.g., display or upload the image)
                 val fileInfo = createFileInfoFromUri(uri)
-                providerFileManager.insertImageToStore(fileInfo) // Assuming you have this method in ProviderFileManager
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Save to Garden")
+                    .setMessage("Would you like to save this image to your garden?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        saveImageToGarden(fileInfo)
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
+
+                providerFileManager.insertImageToStore(fileInfo)
             }
         }
-
 
         view.findViewById<Button>(R.id.photo_button).setOnClickListener {
             isCapturingVideo = false
@@ -106,7 +115,7 @@ class CameraFragment : Fragment() {
 
         view.findViewById<Button>(R.id.video_button).setOnClickListener {
             isCapturingVideo = false
-            pickImageLauncher.launch("image/*")
+            pickImageLauncher.launch("image/jpeg")
         }
 
     }
