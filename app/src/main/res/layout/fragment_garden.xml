@@ -4,16 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/gardenImageView"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:contentDescription="Image from Camera"
-        android:scaleType="centerCrop"/>
+        android:layout_height="match_parent"
+        android:text="Your garden is empty."
+        android:id="@+id/no_plants_text"
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
+        android:contentDescription="Image from Camera"
         android:layout_height='0dp'
         android:layout_weight='1'/>
 

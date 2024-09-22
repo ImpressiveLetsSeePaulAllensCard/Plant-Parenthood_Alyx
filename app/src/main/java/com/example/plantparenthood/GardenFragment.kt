@@ -1,5 +1,6 @@
 package com.example.plantparenthood
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +29,7 @@ class GardenFragment : Fragment() {
     private var param2: String? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var imageAdapter: ImageAdapter
-    private lateinit var gardenImageView: ImageView
+    private lateinit var noPlantsText: TextView
     private val viewModel: GardenViewModel by activityViewModels ()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,16 +52,29 @@ class GardenFragment : Fragment() {
         imageAdapter = ImageAdapter(viewModel.imageUris)
         recyclerView.adapter = imageAdapter
 
+        // Retrieve the Uri from SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val imageUriString = sharedPreferences.getString("last_image_uri", null)
+        imageUriString?.let {
+            val imageUri = Uri.parse(it)
+            viewModel.imageUris.add(imageUri.toString())
+            imageAdapter.notifyItemInserted(viewModel.imageUris.size - 1)
+        }
+
         arguments?.getString("imageUri")?.let { imageUriString ->
             viewModel.imageUris.add(imageUriString)
             imageAdapter.notifyItemInserted(viewModel.imageUris.size - 1)
         }
+        displayImages()
     }
 
+
     private fun displayImages() {
-        if (viewModel.imageUris.isNotEmpty()){
-            val latestImageUri = Uri.parse(viewModel.imageUris.last())
-            gardenImageView.setImageURI(latestImageUri)
+       // If empty show textview else recycler
+        if (viewModel.imageUris.isEmpty()) {
+            recyclerView.visibility = View.GONE
+        } else {
+            recyclerView.visibility = View.VISIBLE
         }
     }
     companion object {

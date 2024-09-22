@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -165,6 +166,8 @@ class CameraFragment : Fragment() {
         uri?.let {
             val fileInfo = createFileInfoFromUri(uri)
 
+            // Save the uri to shared preferences
+            saveImageUriToPreferences(uri)
             AlertDialog.Builder(requireContext())
                 .setTitle("Save to Garden")
                 .setMessage("Would you like to save this image to your garden?")
@@ -176,6 +179,14 @@ class CameraFragment : Fragment() {
             providerFileManager.insertImageToStore(fileInfo)
         } ?: run {
             Log.e("CameraFragment", "Image capture was canceled or failed")
+        }
+    }
+
+    private fun saveImageUriToPreferences(uri: Uri) {
+        val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("last_image_uri", uri.toString())
+            apply()
         }
     }
 
