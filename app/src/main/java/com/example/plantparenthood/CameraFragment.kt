@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -46,7 +47,7 @@ class CameraFragment : Fragment() {
         private const val REQUEST_EXTERNAL_STORAGE = 3
     }
     private lateinit var providerFileManager: ProviderFileManager
-    private lateinit var pickImageLauncher: ActivityResultLauncher<String>
+    private lateinit var pickImageLauncher: ActivityResultLauncher<Array<String>>
     private var photoInfo: FileInfo? = null
     private var videoInfo: FileInfo? = null
     private var isCapturingVideo = false
@@ -86,21 +87,15 @@ class CameraFragment : Fragment() {
                 Log.e("CameraFragment", "Failed to take picture")
             }
         }
-        pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        pickImageLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
             uri?.let {
-                // Handle the selected image URI (e.g., display or upload the image)
-                val fileInfo = createFileInfoFromUri(uri)
-
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Save to Garden")
-                    .setMessage("Would you like to save this image to your garden?")
-                    .setPositiveButton("Yes") { _, _ ->
-                        saveImageToGarden(fileInfo)
-                    }
-                    .setNegativeButton("No", null)
-                    .show()
-
-                providerFileManager.insertImageToStore(fileInfo)
+                requireContext().contentResolver.takePersistableUriPermission(
+                    it,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                handleImageUploadResult(it)
+            } ?: run {
+                Log.e("CameraFragment", "Failed to take picture")
             }
         }
 
@@ -114,9 +109,9 @@ class CameraFragment : Fragment() {
             providerFileManager.insertVideoToStore(videoInfo)
         }
 
-        view.findViewById<Button>(R.id.video_button).setOnClickListener {
+        view.findViewById<Button>(R.id.upload_button).setOnClickListener {
             isCapturingVideo = false
-            pickImageLauncher.launch("image/jpeg")
+            pickImageLauncher.launch(arrayOf("image/*"))
         }
 
     }
@@ -162,17 +157,36 @@ class CameraFragment : Fragment() {
             onPermissionGranted()
         }
     }
+    private fun handleImageUploadResult(uri: Uri?) {
+        uri?.let {
+            // Handle the selected image URI (e.g., display or upload the image)
+            val fileInfo = createFileInfoFromUri(uri)
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Save to Garden")
+                .setMessage("Would you like to save this image to your garden?")
+                .setPositiveButton("Yes") { _, _ ->
+                    saveImageToGarden(fileInfo)
+                    saveImageUriToPreferences(uri) // Save the URI to SharedPreferences
+                }
+                .setNegativeButton("No", null)
+                .show()
+            providerFileManager.insertImageToStore(fileInfo)
+        } ?: run {
+                    Log.e("CameraFragment", "File does not exist at URI: $uri")
+                }
+    }
+
     private fun handleImageCaptureResult(uri: Uri?) {
         uri?.let {
             val fileInfo = createFileInfoFromUri(uri)
 
-            // Save the uri to shared preferences
-            saveImageUriToPreferences(uri)
             AlertDialog.Builder(requireContext())
                 .setTitle("Save to Garden")
                 .setMessage("Would you like to save this image to your garden?")
                 .setPositiveButton("Yes") {_ ,_ ->
                     saveImageToGarden(fileInfo)
+                    saveImageUriToPreferences(uri)
                 }
                 .setNegativeButton("No", null)
                 .show()
@@ -184,12 +198,21 @@ class CameraFragment : Fragment() {
 
     private fun saveImageUriToPreferences(uri: Uri) {
         val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val uris = sharedPreferences.getStringSet("image_uris", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+        uris.add(uri.toString())
         with(sharedPreferences.edit()) {
-            putString("last_image_uri", uri.toString())
+            putStringSet("image_uris", uris)
             apply()
         }
-    }
 
+        // Grant URI permissions
+        requireContext().grantUriPermission(requireContext().packageName,
+            uri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        requireContext().grantUriPermission(requireContext().packageName,
+            uri,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+    }
     private fun saveImageToGarden(fileInfo: FileInfo) {
         val bundle = Bundle().apply {
             putString("imageUri", fileInfo.uri.toString()) // Pass image URI as a string

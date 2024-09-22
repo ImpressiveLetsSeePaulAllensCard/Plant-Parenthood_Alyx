@@ -52,18 +52,23 @@ class GardenFragment : Fragment() {
         imageAdapter = ImageAdapter(viewModel.imageUris)
         recyclerView.adapter = imageAdapter
 
-        // Retrieve the Uri from SharedPreferences
+        // Retrieve the URIs from SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val imageUriString = sharedPreferences.getString("last_image_uri", null)
-        imageUriString?.let {
-            val imageUri = Uri.parse(it)
-            viewModel.imageUris.add(imageUri.toString())
-            imageAdapter.notifyItemInserted(viewModel.imageUris.size - 1)
+        val imageUriStrings = sharedPreferences.getStringSet("image_uris", null)
+        imageUriStrings?.let {
+            for (uriString in it) {
+                if (!viewModel.imageUris.contains(uriString)) {
+                    viewModel.imageUris.add(uriString)
+                    imageAdapter.notifyItemInserted(viewModel.imageUris.size - 1)
+                }
+            }
         }
 
         arguments?.getString("imageUri")?.let { imageUriString ->
-            viewModel.imageUris.add(imageUriString)
-            imageAdapter.notifyItemInserted(viewModel.imageUris.size - 1)
+            if (!viewModel.imageUris.contains(imageUriString)) {
+                viewModel.imageUris.add(imageUriString)
+                imageAdapter.notifyItemInserted(viewModel.imageUris.size - 1)
+            }
         }
         displayImages()
     }
