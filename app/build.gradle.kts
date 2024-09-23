@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    namespace = "com.example.plantparenhood"
+    namespace = "com.example.plantparenthood"
     compileSdk = 34
 
     buildFeatures {
         viewBinding = true
     }
     defaultConfig {
-        applicationId = "com.example.plantparenhood"
+        applicationId = "com.example.plantparenthood"
         minSdk = 31
         targetSdk = 34
         versionCode = 1
@@ -39,12 +39,12 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.9.0")
-    implementation ("commons-io:commons-io:2.6")
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.1")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.8.1")
-    implementation ("androidx.recyclerview:recyclerview:1.3.2")
-    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation(libs.material.v190)
+    implementation (libs.commons.io)
+    implementation (libs.androidx.navigation.fragment.ktx)
+    implementation (libs.androidx.navigation.ui.ktx)
+    implementation (libs.androidx.recyclerview)
+    implementation (libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

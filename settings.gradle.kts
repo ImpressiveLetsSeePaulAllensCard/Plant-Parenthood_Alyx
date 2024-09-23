@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PlantParenhood"
+rootProject.name = "PlantParenthood"
 include(":app")
